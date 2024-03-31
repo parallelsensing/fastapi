@@ -3,6 +3,7 @@ from pydantic import BaseModel,Field
 from enum import Enum
 from .author import IAuthor
 
+# 命名规则：I 代表interface，后面跟着的是接口名，比如 IArticle 代表文章接口
 class IArticle(BaseModel):
   doi:str|None = Field(
     default=None,

@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     raise ValueError(v)
   POSTGRES_SERVER: str = "postgres"
   POSTGRES_USER: str = "casia"
-  POSTGRES_PASSWORD: str = "2023"
+  POSTGRES_PASSWORD: str = "2024"
   POSTGRES_DB: str = "cpsi"
   
   SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
