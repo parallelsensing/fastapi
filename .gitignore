@@ -142,3 +142,4 @@ cython_debug/
 /lab
 /opt
 /docker/server
+.idea

@@ -16,4 +16,3 @@ class IResponse(BaseModel):
   def setErr(self, code:int):
     self.code = code
     self.msg = ERR_RES[code]
-
