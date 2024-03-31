@@ -1,0 +1,56 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+  web:
+    container_name: http-web     # 容器名字
+    image: nginx     # 镜像名称
+    restart: always     # 开机自动重启
+    ports:     # 端口号绑定（宿主机:容器内）
+      - '80:80'
+      - '443:443'
+    volumes:      # 目录映射（宿主机:容器内）
+      - ./server/nginx/cert:/etc/nginx/cert
+      - ./server/nginx/sites:/etc/nginx/conf.d
+      - ./server/nginx/log:/var/log/nginx
+      - ./server/nginx/html:/data/html
+    depends_on:
+      - postgres
+      - sensing
+    links:
+      - sensing
+      - postgres
+      - dbweb
+
+  sensing:
+    container_name: sensing-fastapi
+    build: 
+      context: ./docker/fastapi
+    depends_on:
+      - postgres
+    links: 
+      - postgres
+    volumes:
+      - ./server/fastapi/sensing:/app
+    env_file: ./docker/fastapi/sensing.conf
+    restart: always
+
+
+  postgres:
+    container_name: sensing-postgres
+    image: postgres
+    env_file: ./docker/postgres/database.conf
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - ./server/postgres/data:/var/lib/postgresql/data
+          
+  dbweb:
+    container_name: sensing-dbweb
+    image: adminer
+    depends_on:
+      - postgres
+    links: 
+      - postgres
+    restart: always
