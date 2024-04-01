@@ -9,17 +9,6 @@ from models.user import User as UserModel
 
 app = FastAPI()
 
-# 假设的用户数据库
-fake_user_db = {
-    "alice": {
-        "username": "alice",
-        "password": "secret",
-        "first_name": "Alice",
-        "last_name": "Wonderland",
-        "email": "alice@example.com"
-    }
-}
-
 # Dependency
 def get_db():
     db = SessionLocal()
@@ -51,26 +40,27 @@ def create_user(user_data: UserCreate, db: Session = Depends(get_db)) -> UserRes
     return UserResponse(code=200, data=new_user, msg="User created successfully")
 
 @app.post("/login", response_model=LoginResponse)
-def login(request: LoginRequest):
-    user_info = fake_user_db.get(request.username)
-    if not user_info:
-        return LoginResponse(code=404, data={}, msg="用户不存在")
-    if user_info["password"] != request.password:
-        return LoginResponse(code=400, data={}, msg="密码错误")
-    return LoginResponse(code=200, data={"username": request.username}, msg="登录成功")
+def login(login_request: LoginRequest, db: Session = Depends(get_db)) -> LoginResponse:
+    user = db.query(UserModel).filter(UserModel.phone == login_request.phone).first()
+
+    if not user:
+        return LoginResponse(code=404, msg="User not found", data={})
+
+    # 在这里添加密码验证逻辑，这里为了示例简单，假设密码是明文匹配
+    # 实际应用应使用安全的密码哈希验证
+    if user.password != login_request.password:
+        return LoginResponse(code=401, msg="Incorrect password", data={})
+
+    # 假设登录成功
+    return LoginResponse(code=200, msg="Login successful", data=user)
+
 
 @app.get("/users/{username}", response_model=UserInfo)
-def get_user(username: str):
-    user_info = fake_user_db.get(username)
-    if not user_info:
-        raise HTTPException(status_code=404, detail="用户不存在")
-    # 返回用户信息
-    return UserInfo(
-        username=user_info["username"],
-        first_name=user_info["first_name"],
-        last_name=user_info["last_name"],
-        email=user_info["email"]
-    )
+def get_user(username: str, db: Session = Depends(get_db)) -> UserInfo:
+    user = db.query(UserModel).filter(UserModel.username == username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user  # 这里直接返回数据库模型实例
 
 # @app.post("/items/", response_model=ItemCreate)
 # def create_item(item: ItemCreate, db: Session = Depends(get_db)):

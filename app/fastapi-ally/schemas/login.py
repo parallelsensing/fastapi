@@ -1,13 +1,13 @@
 from pydantic import BaseModel
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 
 # 请求体schema
 class LoginRequest(BaseModel):
-    username: str
+    phone: str
     password: str
 
 # 响应数据schema
 class LoginResponse(BaseModel):
     code: int
-    data: Optional[Dict[str, str]] = None
+    data: Optional[Any] = None
     msg: str
