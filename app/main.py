@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter
 from starlette.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api import cpsi
+from app.api import sensing
 import asyncio
 from app.jobs import jobs_run
 
@@ -19,10 +19,10 @@ app.add_middleware(
 
 
 router = APIRouter()
-router.include_router(cpsi.article, prefix="/article", tags=["cpsi", "article"])
-router.include_router(cpsi.user, prefix="/user", tags=["cpsi", "user"])
+router.include_router(sensing.article, prefix="/article", tags=["sensing", "article"])
+router.include_router(sensing.user, prefix="/user", tags=["sensing", "user"])
 
-app.include_router(router, prefix=settings.API_PATH, tags=["cpsi"])
+app.include_router(router, prefix=settings.API_PATH, tags=["sensing"])
 
 
 

@@ -2,10 +2,10 @@ from pydantic import BaseSettings, AnyHttpUrl, validator, PostgresDsn, EmailStr
 from typing import List, Union, Optional, Dict, Any
 
 class Settings(BaseSettings):
-  PROJECT_NAME:str = 'cpsi'
-  BASE_URL:str = 'https://www.j-cpsi.com'
-  CPSI_URL:str = 'https://www.j-cpsi.com'
-  API_PATH:str = '/api/cpsi'
+  PROJECT_NAME:str = 'sensing'
+  BASE_URL:str = 'https://www.j-sensing.com'
+  sensing_URL:str = 'https://www.j-sensing.com'
+  API_PATH:str = '/api/sensing'
   API_JIST:str = '/api/jist'
   FILES_DIR:str = './files'
   SECRET_KEY: str = 'R8DN0ClowMT5dqDNPEwG4dq-d_p-bkzZoeYG0Ne94uY'
@@ -41,7 +41,7 @@ class Settings(BaseSettings):
   POSTGRES_SERVER: str = "postgres"
   POSTGRES_USER: str = "casia"
   POSTGRES_PASSWORD: str = "2024"
-  POSTGRES_DB: str = "cpsi"
+  POSTGRES_DB: str = "sensing"
   
   SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
   @validator("SQLALCHEMY_DATABASE_URI", pre=True)

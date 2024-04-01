@@ -1,5 +1,5 @@
 -- Adminer 4.8.1 PostgreSQL 15.1 (Debian 15.1-1.pgdg110+1) dump
--- CREATE DATABASE "cpsi";
+-- CREATE DATABASE "sensing";
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
