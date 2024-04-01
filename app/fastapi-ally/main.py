@@ -1,10 +1,11 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from database import SessionLocal, engine
+from database import SessionLocal, engine, Base
 from schemas.login import LoginRequest, LoginResponse
-from schemas.user import UserInfo
+from schemas.user import UserInfo, UserCreate, UserResponse
 from schemas.item import ItemCreate
 from models.item import Item as DBItem
+from models.user import User as UserModel
 
 app = FastAPI()
 
@@ -18,6 +19,36 @@ fake_user_db = {
         "email": "alice@example.com"
     }
 }
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.post("/create_user", response_model=UserResponse)
+def create_user(user_data: UserCreate, db: Session = Depends(get_db)) -> UserResponse:
+    db_user = db.query(UserModel).filter(UserModel.username == user_data.username).first()
+    if db_user:
+        return UserResponse(code=400, msg="Username already registered")
+
+    # 这里密码应进行加密处理，示例中直接使用明文
+    new_user = UserModel(
+        username=user_data.username,
+        first_name=user_data.first_name,
+        last_name=user_data.last_name,
+        password=user_data.password,
+        phone=user_data.phone
+    )
+
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    # 成功创建用户，构造响应
+    return UserResponse(code=200, data=new_user, msg="User created successfully")
 
 @app.post("/login", response_model=LoginResponse)
 def login(request: LoginRequest):
@@ -55,5 +86,6 @@ def create_item(item: ItemCreate):
     return item
 
 if __name__ == "__main__":
+    Base.metadata.create_all(bind=engine)
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8888)
