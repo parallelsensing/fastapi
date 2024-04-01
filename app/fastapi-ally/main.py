@@ -3,9 +3,10 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, engine, Base
 from schemas.login import LoginRequest, LoginResponse
 from schemas.user import UserInfo, UserCreate, UserResponse
-from schemas.item import ItemCreate
-from models.item import Item as DBItem
+from schemas.item import ItemCreate, ItemResponse
+from models.item import Item as ItemModel
 from models.user import User as UserModel
+from typing import List
 
 app = FastAPI()
 
@@ -62,17 +63,46 @@ def get_user(username: str, db: Session = Depends(get_db)) -> UserInfo:
         raise HTTPException(status_code=404, detail="User not found")
     return user  # 这里直接返回数据库模型实例
 
-# @app.post("/items/", response_model=ItemCreate)
-# def create_item(item: ItemCreate, db: Session = Depends(get_db)):
-#     db_item = DBItem(**item.dict())
-#     db.add(db_item)
-#     db.commit()
-#     db.refresh(db_item)
-#     return item
+# return all users
+@app.get("/users/", response_model=List[UserInfo])
+def get_all_users(db: Session = Depends(get_db)) -> UserInfo:
+    users = db.query(UserModel).all()
+    return users
 
-@app.post("/items/", response_model=ItemCreate)
-def create_item(item: ItemCreate):
-    # 这里仅返回接收到的项目数据,暂时未连数据库
+@app.post("/create_item", response_model=ItemCreate)
+def create_item(item: ItemCreate, db: Session = Depends(get_db)):
+    db_item = ItemModel(
+        latitude=item.coordinates[0],
+        longitude=item.coordinates[1],
+        color=item.color,
+        image_url=item.image_url,
+        name=item.name,
+        description=item.description
+    )
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    # 手动构造响应数据
+    return {
+        "coordinates": (db_item.latitude, db_item.longitude),
+        "color": db_item.color,
+        "image_url": db_item.image_url,
+        "name": db_item.name,
+        "description": db_item.description
+    }
+    # return ItemResponse(code=200, msg="Item created successfully")
+
+@app.get("/items/", response_model=List[ItemCreate])
+def get_all_items(db: Session = Depends(get_db)):
+    items = db.query(ItemModel).all()
+    for item in items:
+        item.coordinates = (item.latitude, item.longitude)
+    return items
+
+@app.get("/items/{item_id}", response_model=ItemCreate)
+def get_item(item_id: int, db: Session = Depends(get_db)):
+    item = db.query(ItemModel).filter(ItemModel.id == item_id).first()
+    item.coordinates = (item.latitude, item.longitude)
     return item
 
 if __name__ == "__main__":
