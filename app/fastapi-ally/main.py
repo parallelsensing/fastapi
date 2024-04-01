@@ -24,7 +24,6 @@ def create_user(user_data: UserCreate, db: Session = Depends(get_db)) -> UserRes
     if db_user:
         return UserResponse(code=400, msg="Username already registered")
 
-    # 这里密码应进行加密处理，示例中直接使用明文
     new_user = UserModel(
         username=user_data.username,
         first_name=user_data.first_name,
@@ -47,8 +46,6 @@ def login(login_request: LoginRequest, db: Session = Depends(get_db)) -> LoginRe
     if not user:
         return LoginResponse(code=404, msg="User not found", data={})
 
-    # 在这里添加密码验证逻辑，这里为了示例简单，假设密码是明文匹配
-    # 实际应用应使用安全的密码哈希验证
     if user.password != login_request.password:
         return LoginResponse(code=401, msg="Incorrect password", data={})
 
