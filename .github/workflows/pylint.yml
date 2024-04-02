@@ -38,7 +38,7 @@ jobs:
         SOURCE: "app/"
         REMOTE_HOST: ${{ secrets.SERVER_IP }}
         REMOTE_USER: ${{ secrets.SERVER_USER }}
-        TARGET: ${{ secrets.SERVER_DESTINATION }}/sensing
+        TARGET: ${{ secrets.SERVER_DESTINATION }}/sensing/app
         SCRIPT_AFTER: |
           docker restart project-sensing
           echo 'Deploy sensing api fastapi Success!'
