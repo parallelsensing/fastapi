@@ -1,0 +1,45 @@
+name: Sensing FastAPI deploy
+
+on:
+  push:
+    branches: [ "release" ]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.10' 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Upload artifact for deployment job
+      uses: actions/upload-artifact@v3
+      with:
+        name: fastapi-sensing-app
+        path: ./app
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Download artifact from build job
+      uses: actions/download-artifact@v3
+      with:
+        name: fastapi-sensing-app
+        path: app
+
+    - name: 'Deploy to Server of Sensing'
+      uses: easingthemes/ssh-deploy@main
+      with:
+        SSH_PRIVATE_KEY: ${{ secrets.SERVER_PRIVATE_KEY }}
+        ARGS: "-rlgoDzvc -i --delete"
+        SOURCE: "app/"
+        REMOTE_HOST: ${{ secrets.SERVER_IP }}
+        REMOTE_USER: ${{ secrets.SERVER_USER }}
+        TARGET: ${{ secrets.SERVER_DESTINATION }}/sensing
+        SCRIPT_AFTER: |
+          docker restart project-sensing
+          echo 'Deploy sensing api fastapi Success!'
+
