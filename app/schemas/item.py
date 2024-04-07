@@ -10,7 +10,7 @@ class ItemCreate(BaseModel):
     description: Optional[str] = None
 
     class Config:
-        orm_mode = True  # 如果你想从ORM模型创建Pydantic模型，需要这个配置
+        orm_mode = True  
 
 class ItemResponse(BaseModel):
     code: int

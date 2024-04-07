@@ -102,6 +102,13 @@ def get_item(item_id: int, db: Session = Depends(get_db)):
     item.coordinates = (item.latitude, item.longitude)
     return item
 
+@app.post("/items/{search}", response_model=List[ItemCreate])
+def search_item(search: str, db: Session = Depends(get_db)):
+    items = db.query(ItemModel).filter(ItemModel.name.like(f"%{search}%")).all()
+    for item in items:
+        item.coordinates = (item.latitude, item.longitude)
+    return items
+
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     import uvicorn
