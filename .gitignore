@@ -143,3 +143,4 @@ cython_debug/
 /opt
 /docker/server
 .idea
+.fastapi.code-workspace
