@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
-from app.database import SessionLocal, engine, Base
+from app.core.database import SessionLocal, engine, Base
 from app.schemas import ItemCreate, ItemCreate, ItemResponse
 from app.models import Item as ItemModel
 from typing import List
