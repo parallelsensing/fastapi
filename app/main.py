@@ -7,7 +7,7 @@ from app.models import User as UserModel
 
 
 app = FastAPI()
-# Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 
 
