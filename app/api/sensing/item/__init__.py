@@ -46,6 +46,12 @@ def get_all_items(db: Session = Depends(get_db)):
         item.coordinates = (item.latitude, item.longitude)
     return items
 
+@router.get("/get_item_casia", response_model=ItemCreate)
+def get_item_casia(db: Session = Depends(get_db)):
+    item = db.query(ItemModel).filter(ItemModel.name == "中国科学院自动化研究所").first()
+    item.coordinates = (item.latitude, item.longitude)
+    return item
+
 @router.get("/get_items/{item_id}", response_model=ItemCreate)
 def get_item(item_id: int, db: Session = Depends(get_db)):
     item = db.query(ItemModel).filter(ItemModel.id == item_id).first()
