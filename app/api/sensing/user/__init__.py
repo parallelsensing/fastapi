@@ -4,6 +4,7 @@ from app.core.database import SessionLocal, engine, Base
 from app.schemas import LoginRequest, LoginResponse, UserInfo, UserCreate, UserResponse
 from app.models import User as UserModel
 from typing import List
+from app.core.token import create_token, verify_token
 
 # app = FastAPI()
 
@@ -42,15 +43,18 @@ def create_user(user_data: UserCreate, db: Session = Depends(get_db)) -> UserRes
 @router.post("/login", response_model=LoginResponse)
 def login(login_request: LoginRequest, db: Session = Depends(get_db)) -> LoginResponse:
     user = db.query(UserModel).filter(UserModel.phone == login_request.phone).first()
+    
 
     if not user:
         return LoginResponse(code=404, msg="User not found", data={})
 
     if user.password != login_request.password:
         return LoginResponse(code=401, msg="Incorrect password", data={})
+    
+    token = create_token(user.username)
 
     # 假设登录成功
-    return LoginResponse(code=200, msg="Login successful", data=user)
+    return LoginResponse(code=200, msg="Login successful", data=user, token=token)
 
 
 @router.get("/get_users/{username}", response_model=UserInfo)

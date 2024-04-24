@@ -11,3 +11,4 @@ class LoginResponse(BaseModel):
     code: int
     data: Optional[Any] = None
     msg: str
+    token: Optional[str] = None
