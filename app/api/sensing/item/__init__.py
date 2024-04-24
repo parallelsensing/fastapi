@@ -5,7 +5,7 @@ from app.schemas import ItemCreate, ItemCreate, ItemResponse
 from app.models import Item as ItemModel
 from app.models import User as UserModel
 from typing import List
-from core.token import get_current_user
+from app.core.token import get_current_user
 
 # app = FastAPI()
 router = APIRouter()
