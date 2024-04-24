@@ -42,11 +42,13 @@ def create_item(item: ItemCreate, db: Session = Depends(get_db)):
     # return ItemResponse(code=200, msg="Item created successfully")
 
 @router.get("/get_items", response_model=List[ItemCreate])
-def get_all_items(db: Session = Depends(get_db)):
-    items = db.query(ItemModel).all()
-    for item in items:
-        item.coordinates = (item.latitude, item.longitude)
-    return items
+def get_all_items(db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    user = db.query(UserModel).filter(UserModel.username == current_user).first()
+    if user.role == 0:
+        items = db.query(ItemModel).all()
+        for item in items:
+            item.coordinates = (item.latitude, item.longitude)
+        return items
 
 @router.get("/get_item_casia", response_model=ItemCreate)
 def get_item_casia(db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
