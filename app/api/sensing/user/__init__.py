@@ -70,10 +70,6 @@ def get_all_users(db: Session = Depends(get_db)) -> UserInfo:
     users = db.query(UserModel).all()
     return users
 
-# get current user
-@router.get("/get_current_user", response_model=UserInfo)
-def get_current_user(token: str = Depends(verify_token), db: Session = Depends(get_db)) -> UserInfo:
-    user = db.query(UserModel).filter(UserModel.username == token).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+@router.get("/users/me")
+def read_users_me(current_user: str = Depends(get_current_user)):
+    return {"username": current_user}

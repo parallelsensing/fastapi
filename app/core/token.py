@@ -2,8 +2,6 @@ import hashlib
 import secrets
 from datetime import datetime, timedelta
 
-from fastapi import HTTPException
-
 # 密钥应该保密，只在服务器上知道
 SECRET_KEY = secrets.token_hex(16)
 

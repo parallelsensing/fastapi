@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session
 from app.core.database import SessionLocal, engine, Base
 from app.schemas import ItemCreate, ItemCreate, ItemResponse
 from app.models import Item as ItemModel
+from app.models import User as UserModel
 from typing import List
+from core.token import get_current_user
 
 # app = FastAPI()
 router = APIRouter()
@@ -47,10 +49,13 @@ def get_all_items(db: Session = Depends(get_db)):
     return items
 
 @router.get("/get_item_casia", response_model=ItemCreate)
-def get_item_casia(db: Session = Depends(get_db)):
-    item = db.query(ItemModel).filter(ItemModel.name == "中国科学院自动化研究所").first()
-    item.coordinates = (item.latitude, item.longitude)
-    return item
+def get_item_casia(db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    # 根据current user的信息，获取user的权限，然后根据权限返回不同的数据
+    user = db.query(UserModel).filter(UserModel.username == current_user).first()
+    if user.role == 1:
+        item = db.query(ItemModel).filter(ItemModel.name == "中国科学院自动化研究所").first()
+        item.coordinates = (item.latitude, item.longitude)
+        return item
 
 @router.get("/get_items/{item_id}", response_model=ItemCreate)
 def get_item(item_id: int, db: Session = Depends(get_db)):
