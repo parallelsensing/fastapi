@@ -4,7 +4,7 @@ from app.core.database import SessionLocal, engine, Base
 from app.schemas import LoginRequest, LoginResponse, UserInfo, UserCreate, UserResponse
 from app.models import User as UserModel
 from typing import List
-from app.core.token import create_token, verify_token
+from app.core.token import create_token, verify_token, get_current_user
 
 # app = FastAPI()
 
@@ -69,3 +69,11 @@ def get_user(username: str, db: Session = Depends(get_db)) -> UserInfo:
 def get_all_users(db: Session = Depends(get_db)) -> UserInfo:
     users = db.query(UserModel).all()
     return users
+
+# get current user
+@router.get("/get_current_user", response_model=UserInfo)
+def get_current_user(token: str = Depends(verify_token), db: Session = Depends(get_db)) -> UserInfo:
+    user = db.query(UserModel).filter(UserModel.username == token).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user

@@ -2,6 +2,8 @@ import hashlib
 import secrets
 from datetime import datetime, timedelta
 
+from fastapi import HTTPException
+
 # 密钥应该保密，只在服务器上知道
 SECRET_KEY = secrets.token_hex(16)
 
@@ -22,3 +24,14 @@ def verify_token(username, token):
     data = f"{username}:{token[-14:]}"
     expected_token = hashlib.sha256(f"{data}{SECRET_KEY}".encode()).hexdigest()
     return token == expected_token
+
+def get_current_user(token: str):
+    try:
+        username, user_token = token.split(':')
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid token format")
+
+    if not verify_token(username, user_token):
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    return username
