@@ -9,7 +9,7 @@ def create_token(username):
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
     data = f"{username}:{timestamp}"
     token = hashlib.sha256(f"{data}{SECRET_KEY}".encode()).hexdigest()
-    return token
+    return f"{username}:{token}"  # 包含用户名和 token
 
 def verify_token(username, token):
     # 提取时间戳
@@ -25,11 +25,16 @@ def verify_token(username, token):
 
 def get_current_user(token: str):
     try:
-        username, user_token = token.split(':')
+        username, user_token = token.split(':')  # 尝试解析用户名和 token
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid token format")
 
-    if not verify_token(username, user_token):
+    # 重新构建用于验证的 token
+    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+    data = f"{username}:{timestamp}"
+    expected_token = hashlib.sha256(f"{data}{SECRET_KEY}".encode()).hexdigest()
+
+    if user_token != expected_token:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     
     return username
