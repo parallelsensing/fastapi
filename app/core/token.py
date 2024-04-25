@@ -25,7 +25,7 @@ def verify_token(username, token):
 
 def get_current_user(token: str):
     try:
-        username, user_token = token.split(':')  # 尝试解析用户名和 token
+        username, user_token = token.split('%')  # 尝试解析用户名和 token
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid token format")
 
