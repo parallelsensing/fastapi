@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal, engine, Base
-from app.schemas import ItemCreate, ItemCreate, ItemResponse
+from app.schemas import ItemCreate, ItemCreate, ItemResponse, ItemUploadResponse
 from app.models import Item as ItemModel
 from app.models import User as UserModel
 from typing import List
@@ -71,3 +71,32 @@ def search_item(search: str, db: Session = Depends(get_db)):
     for item in items:
         item.LngLat = (item.latitude, item.longitude)
     return items
+
+@router.post("/upload", response_model=ItemUploadResponse)
+def upload_image(item: ItemCreate, db: Session = Depends(get_db)):
+    # 创建数据库中的项目实例
+    db_item = ItemModel(
+        latitude=item.coordinates[0],
+        longitude=item.coordinates[1],
+        color=item.color,
+        image_url=item.image_url,
+        name=item.name,
+        description=item.description,
+        image_name=item.image_name,
+        image_time=item.image_time,
+        placeholder=item.placeholder
+    )
+    
+    # 将项目添加到数据库
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    
+    # 返回成功上传的响应
+    return {
+        "message": "File successfully uploaded",
+        "filename": db_item.image_url,  # 假设这里使用的是图片的URL作为文件名
+        "image_name": db_item.image_name,
+        "image_time": db_item.image_time,
+        "placeholder": db_item.placeholder
+    }

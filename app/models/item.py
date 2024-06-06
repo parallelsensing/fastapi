@@ -12,3 +12,6 @@ class Item(Base):
     image_url = Column(String)
     name = Column(String)
     description = Column(Text)
+    image_name = Column(String)  # 添加新的图片名字字段
+    image_time = Column(String)  # 添加新的图片时间字段
+    placeholder = Column(String)  # 添加新的占位字段
