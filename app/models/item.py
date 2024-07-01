@@ -12,3 +12,12 @@ class Item(Base):
     image_url = Column(String)
     name = Column(String)
     description = Column(Text)
+
+    def to_json(self)->dict:
+        return {
+            'id': self.id,
+            'username': self.username,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'phone': self.phone
+        }

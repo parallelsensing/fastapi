@@ -37,7 +37,7 @@ def create_user(user_data: UserCreate, db: Session = Depends(get_db)) -> UserRes
     db.refresh(new_user)
 
     # 成功创建用户，构造响应
-    return UserResponse(code=200, data=new_user, msg="User created successfully")
+    return UserResponse(code=200, data=new_user.to_json(), msg="User created successfully")
 
 @router.post("/login", response_model=LoginResponse)
 def login(login_request: LoginRequest, db: Session = Depends(get_db)) -> LoginResponse:
@@ -50,7 +50,7 @@ def login(login_request: LoginRequest, db: Session = Depends(get_db)) -> LoginRe
         return LoginResponse(code=401, msg="Incorrect password", data={})
 
     # 假设登录成功
-    return LoginResponse(code=200, msg="Login successful", data=user)
+    return LoginResponse(code=200, msg="Login successful", data=user.to_json())
 
 
 @router.get("/get_users/{username}", response_model=UserInfo)

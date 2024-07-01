@@ -21,5 +21,5 @@ class UserCreate(BaseModel):
 
 class UserResponse(BaseModel):
     code: int
-    data: Optional[Any] = None
+    data: Optional[dict] = None
     msg: str
