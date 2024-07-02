@@ -13,6 +13,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v3
       with:
@@ -42,4 +51,3 @@ jobs:
         SCRIPT_AFTER: |
           docker restart project-sensing
           echo 'Deploy sensing api fastapi Success!'
-
