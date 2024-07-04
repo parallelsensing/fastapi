@@ -12,6 +12,12 @@ class Item(Base):
     image_url = Column(String)
     name = Column(String)
     description = Column(Text)
-    image_name = Column(String)  # 添加新的图片名字字段
-    image_time = Column(String)  # 添加新的图片时间字段
-    placeholder = Column(String)  # 添加新的占位字段
+
+    def to_json(self)->dict:
+        return {
+            'id': self.id,
+            'username': self.username,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'phone': self.phone
+        }
