@@ -17,9 +17,15 @@ class ItemResponse(BaseModel):
     data: Optional[Any] = None
     msg: str
 
-class ItemUploadResponse(BaseModel):
+class ImageUpload(BaseModel):
+    image_url: HttpUrl  # 图片URL，使用Pydantic的HttpUrl类型进行简单验证
+    image_name: str  # 图片名字
+    image_time: str  # 图片时间
+    placeholder: Optional[str] = ""  # 占位字段，默认为空字符串
+
+class ImageUploadResponse(BaseModel):
     message: str  # 成功或错误信息
     filename: str  # 成功上传的文件名
     image_name: str  # 上传的图片名字
     image_time: str  # 上传的图片时间
-    placeholder: str  # 占位字段内容（如果有的话）
+    placeholder: str  # 占位字段内容

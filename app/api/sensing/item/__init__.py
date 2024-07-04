@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal, engine, Base
-from app.schemas import ItemCreate, ItemCreate, ItemResponse, ItemUploadResponse
+from app.schemas import ItemCreate, ItemCreate, ItemResponse, ImageUploadResponse, ImageUpload
 from app.models import Item as ItemModel
 from app.models import User as UserModel
 from typing import List
@@ -72,8 +72,8 @@ def search_item(search: str, db: Session = Depends(get_db)):
         item.LngLat = (item.latitude, item.longitude)
     return items
 
-@router.post("/upload", response_model=ItemUploadResponse)
-def upload_image(item: ItemCreate, db: Session = Depends(get_db)):
+@router.post("/upload", response_model=ImageUploadResponse)
+def upload_image(item: ImageUpload, db: Session = Depends(get_db)):
     # 创建数据库中的项目实例
     db_item = ItemModel(
         latitude=item.coordinates[0],
@@ -100,3 +100,4 @@ def upload_image(item: ItemCreate, db: Session = Depends(get_db)):
         "image_time": db_item.image_time,
         "placeholder": db_item.placeholder
     }
+
