@@ -44,7 +44,6 @@ def create_user(user_data: UserCreate, db: Session = Depends(get_db)) -> UserRes
 def login(login_request: LoginRequest, db: Session = Depends(get_db)) -> LoginResponse:
     user = db.query(UserModel).filter(UserModel.phone == login_request.phone).first()
     
-
     if not user:
         return LoginResponse(code=404, msg="User not found", data={})
 
@@ -53,12 +52,14 @@ def login(login_request: LoginRequest, db: Session = Depends(get_db)) -> LoginRe
     
     token = create_token(user.username)
 
+    
     # 假设登录成功
-    return LoginResponse(code=200, msg="Login successful", data=user.to_json())
+    # return LoginResponse(code=200, msg="Login successful", data={"token": token,"data":user.to_json()})
+    return LoginResponse(code=200, msg="Login successful", data=user.to_json(),token=token)
 
 
 @router.get("/get_users/{username}", response_model=UserInfo)
-def get_user(username: str, db: Session = Depends(get_db)) -> UserInfo:
+def get_user(username: str, db: Session = Depends(get_db), token: str = Depends(get_current_user)) -> UserInfo:
     user = db.query(UserModel).filter(UserModel.username == username).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -66,7 +67,7 @@ def get_user(username: str, db: Session = Depends(get_db)) -> UserInfo:
 
 # return all users
 @router.get("/get_users", response_model=List[UserInfo])
-def get_all_users(db: Session = Depends(get_db)) -> UserInfo:
+def get_all_users(db: Session = Depends(get_db), username: str = Depends(get_current_user)) -> List[UserInfo]:
     users = db.query(UserModel).all()
     return users
 
