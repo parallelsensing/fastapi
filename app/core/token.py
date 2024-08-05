@@ -2,11 +2,10 @@ import hashlib
 import secrets
 from datetime import datetime, timedelta
 from fastapi import FastAPI, Depends, HTTPException, status, Request
-
+from .config import settings
 
 # 密钥应该保密，只在服务器上知道
-SECRET_KEY = secrets.token_hex(16)
-
+SECRET_KEY = settings.SECRET_KEY
 
 
 def create_token(username: str) -> str:

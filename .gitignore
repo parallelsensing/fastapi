@@ -144,3 +144,5 @@ cython_debug/
 /docker/server
 .idea
 .fastapi.code-workspace
+
+app/uploads/
