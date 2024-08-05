@@ -19,8 +19,8 @@ def get_db():
 @router.post("/create", response_model=ItemCreate)
 def create_item(item: ItemCreate, db: Session = Depends(get_db), username: str = Depends(get_current_user)):
     db_item = ItemModel(
-        latitude=item.coordinates[0],
-        longitude=item.coordinates[1],
+        latitude=item.LngLat[0],
+        longitude=item.LngLat[1],
         color=item.color,
         image_url=item.image_url,
         name=item.name,
