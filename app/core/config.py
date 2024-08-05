@@ -21,7 +21,7 @@ class Settings():
     EMAIL_TOKEN_EXPIRE_HOURS: int = 24 * 100
 
     OPENAI_API_KEY:str = ""
-    OPENAI_BASE_URL:str =  "http://10.116.123.30:9997/v1"
+    OPENAI_BASE_URL:str =  "http://8.140.56.55:9997/v1"
     LLM_MODEL = "glm-4v"
 
     SMTP_TLS: bool = True
