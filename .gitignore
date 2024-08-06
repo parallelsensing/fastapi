@@ -146,3 +146,4 @@ cython_debug/
 .fastapi.code-workspace
 
 app/uploads/
+!app/uploads/README.md
