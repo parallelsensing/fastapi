@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+# from pydantic_settings import BaseSettings
 from pydantic import AnyHttpUrl, PostgresDsn, EmailStr, field_validator
 from typing import List, Union, Optional, Dict, Any
 import os
@@ -20,7 +20,7 @@ class Settings():
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     EMAIL_TOKEN_EXPIRE_HOURS: int = 24 * 100
 
-    OPENAI_API_KEY:str = ""
+    OPENAI_API_KEY:str = "999"
     OPENAI_BASE_URL:str =  "http://8.140.56.55:9997/v1"
     LLM_MODEL = "glm-4v"
 

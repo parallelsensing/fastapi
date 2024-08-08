@@ -92,7 +92,7 @@ if __name__ == "__main__":
         # s = input("Mark:")
         # base64处理图片
 
-    data = openai1.intelligentsJudgment("/Users/markyangkp/Desktop/Projects/fastapi/app/uploads/5580e90d-cfc7-48e1-a904-9419a586411b.jpg")
+    data = openai1.intelligentsJudgment("/Users/markyangkp/Desktop/Projects/fastapi/app/uploads/796fdcb2-49fb-44bd-8914-75d28e6efa28.jpeg")
     
     print(data.type)
     
