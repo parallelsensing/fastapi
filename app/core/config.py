@@ -1,5 +1,5 @@
 # from pydantic_settings import BaseSettings
-from pydantic import AnyHttpUrl, PostgresDsn, EmailStr , field_validator
+from pydantic import AnyHttpUrl, PostgresDsn, EmailStr #, field_validator
 from typing import List, Union, Optional, Dict, Any
 import os
 class Settings():
