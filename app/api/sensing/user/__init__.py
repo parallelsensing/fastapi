@@ -27,8 +27,7 @@ def create_user(user_data: UserCreate, db: Session = Depends(get_db)) -> UserRes
 
     new_user = UserModel(
         username=user_data.username,
-        first_name=user_data.first_name,
-        last_name=user_data.last_name,
+        nickname=user_data.nickname,
         password=user_data.password,
         phone=user_data.phone
     )

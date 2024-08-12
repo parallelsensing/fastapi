@@ -4,8 +4,7 @@ from typing import Optional, Dict, Any
 # 用户信息模型
 class UserInfo(BaseModel):
     username: Optional[str] = None
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
+    nickname: Optional[str] = None
     phone: Optional[str] = None
     role: Optional[int] = None
     class Config:
@@ -14,8 +13,7 @@ class UserInfo(BaseModel):
 # 用户请求模型
 class UserCreate(BaseModel):
     username: str
-    first_name: str
-    last_name: str
+    nickname: str
     password: str
     phone: str
     role: int
