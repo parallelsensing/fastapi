@@ -49,5 +49,12 @@ jobs:
         REMOTE_USER: ${{ secrets.SERVER_USER }}
         TARGET: ${{ secrets.SERVER_DESTINATION }}/sensing/app
         SCRIPT_AFTER: |
+          # Run database migrations
+          cd ${TARGET}
+          source venv/bin/activate  # Activate virtual environment if used
+          alembic upgrade head
+          
+          # Restart Docker container
           docker restart project-sensing
+          
           echo 'Deploy sensing api fastapi Success!'
