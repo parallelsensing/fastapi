@@ -23,7 +23,7 @@ def verify_token(token: str) -> str:
 
     current_timestamp = datetime.utcnow()
     token_gen_time = datetime.strptime(timestamp, "%Y%m%d%H%M%S")
-    if (current_timestamp - token_gen_time) > timedelta(hours=1):
+    if (current_timestamp - token_gen_time) > timedelta(hours=24):
         raise HTTPException(status_code=401, detail="Token expired")
 
     data = f"{username}:{timestamp}"
