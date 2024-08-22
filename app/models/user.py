@@ -5,10 +5,10 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
+    username = Column(String)
     nickname = Column(String)
     password = Column(String)
-    phone = Column(String)
+    phone = Column(String, unique=True, index=True)
     role = Column(Integer, default=1) # 0:admin, 1:normal_user
 
     def __repr__(self):

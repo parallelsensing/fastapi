@@ -5,7 +5,7 @@ from app.schemas import LoginRequest, LoginResponse, UserInfo, UserCreate, UserR
 from app.models import User as UserModel
 from typing import List
 from app.core.token import create_token, verify_token, get_current_user
-
+from app.core.security import hash_password,verify_password
 # app = FastAPI()
 
 router = APIRouter()
@@ -21,14 +21,16 @@ def get_db():
 
 @router.post("/create", response_model=UserResponse)
 def create_user(user_data: UserCreate, db: Session = Depends(get_db)) -> UserResponse:
-    db_user = db.query(UserModel).filter(UserModel.username == user_data.username).first()
+    db_user = db.query(UserModel).filter(UserModel.phone == user_data.phone).first()
     if db_user:
         return UserResponse(code=400, msg="Username already registered")
+    hashed_password = hash_password(user_data.password)
+    print(hashed_password)
 
     new_user = UserModel(
         username=user_data.username,
         nickname=user_data.nickname,
-        password=user_data.password,
+        password=hashed_password,
         phone=user_data.phone
     )
 
@@ -46,7 +48,7 @@ def login(login_request: LoginRequest, db: Session = Depends(get_db)) -> LoginRe
     if not user:
         return LoginResponse(code=404, msg="User not found", data={})
 
-    if user.password != login_request.password:
+    if not verify_password(user.password,login_request.password):
         return LoginResponse(code=401, msg="Incorrect password", data={})
     
     token = create_token(user.username)

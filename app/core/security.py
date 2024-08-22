@@ -1,29 +1,19 @@
-from datetime import datetime, timedelta
-from typing import Any, Union
-from jose import jwt
-from passlib.context import CryptContext
-
-from app.core.config import settings
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-ALGORITHM = "HS256"
-
-def create_access_token(
-  subject: Union[str, Any], expires_delta: timedelta = None
-) -> str:
-  if expires_delta:
-    expire = datetime.utcnow() + expires_delta
-  else:
-    expire = datetime.utcnow() + timedelta(
-      minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-    )
-  to_encode = {"exp": expire, "email": str(subject)}
-  encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
-  return encoded_jwt
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-  return pwd_context.verify(plain_password, hashed_password)
+import hashlib
+import os
 
 
-def get_password_hash(password: str) -> str:
-  return pwd_context.hash(password)
+def hash_password(password: str) -> str:
+    # 生成盐
+    salt = os.urandom(16)  # 生成16字节的盐
+    # 使用 md5 哈希密码和盐
+    hashed_password = hashlib.md5(salt + password.encode('utf-8')).hexdigest()
+    # 将盐和哈希值组合在一起存储（盐的十六进制表示）
+    return salt.hex() + ":" + hashed_password
+
+def verify_password(stored_password: str, provided_password: str) -> bool:
+    salt, hashed_password = stored_password.split(":")
+    salt = bytes.fromhex(salt)  # 将盐转换回字节
+    # 使用相同的算法和盐哈希提供的密码
+    hashed_provided_password = hashlib.md5(salt + provided_password.encode('utf-8')).hexdigest()
+    # 比较哈希值
+    return hashed_password == hashed_provided_password
