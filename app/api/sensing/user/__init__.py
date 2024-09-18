@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal, engine, Base
-from app.schemas import LoginRequest, LoginResponse, UserInfo, UserCreate, UserResponse
+from app.schemas import LoginRequest, LoginResponse, UserInfo, UserCreate, UserResponse,UserForgotPasswordRequest,UserResetPasswordRequest
 from app.models import User as UserModel
 from typing import List
 from app.core.token import create_token, verify_token, get_current_user
@@ -57,7 +57,31 @@ def login(login_request: LoginRequest, db: Session = Depends(get_db)) -> LoginRe
     # 假设登录成功
     # return LoginResponse(code=200, msg="Login successful", data={"token": token,"data":user.to_json()})
     return LoginResponse(code=200, msg="Login successful", data=user.to_json(),token=token)
-
+@router.post("/reset_password",response_model=UserResponse)
+def reset_password(resetBody:UserResetPasswordRequest, db: Session = Depends(get_db)):
+    phone:str = resetBody.phone
+    old_password:str = resetBody.old_password
+    new_password:str = resetBody.new_password
+    user = db.query(UserModel).filter(UserModel.phone == phone).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user.password != old_password:
+        raise HTTPException(status_code=401, detail="Incorrect password")
+    user.password = new_password
+    db.commit()
+    db.refresh(user)
+    return UserResponse(code=200, data=None, msg="Password reset successful")
+@router.post("/forgot_password",response_model=UserResponse)
+def forgot_password(forgotBody:UserForgotPasswordRequest, db: Session = Depends(get_db)):
+    phone:str = forgotBody.phone
+    new_password:str = forgotBody.new_password
+    user = db.query(UserModel).filter(UserModel.phone == phone).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.password = new_password
+    db.commit()
+    db.refresh(user)
+    return UserResponse(code=200, data=None, msg="Password reset successful")
 
 @router.get("/get_users/{username}", response_model=UserInfo)
 def get_user(username: str, db: Session = Depends(get_db), token: str = Depends(get_current_user)) -> UserInfo:
