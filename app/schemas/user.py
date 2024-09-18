@@ -23,3 +23,11 @@ class UserResponse(BaseModel):
     code: int
     data: Optional[dict] = None
     msg: str
+
+class UserResetPasswordRequest(BaseModel):
+    phone: str
+    old_password: str
+    new_password: str
+class UserForgotPasswordRequest(BaseModel):
+    phone: str
+    new_password: str
