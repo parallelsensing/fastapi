@@ -6,6 +6,7 @@ from app.models import User as UserModel
 from typing import List
 from app.core.token import create_token, verify_token, get_current_user
 from app.core.security import hash_password,verify_password
+from app.utils import is_valid_email
 # app = FastAPI()
 
 router = APIRouter()
@@ -21,7 +22,9 @@ def get_db():
 
 @router.post("/create", response_model=UserResponse)
 def create_user(user_data: UserCreate, db: Session = Depends(get_db)) -> UserResponse:
-    db_user = db.query(UserModel).filter(UserModel.phone == user_data.phone).first()
+    if not is_valid_email(user_data.email):
+        return UserResponse(code=400, msg="Invalid email address")
+    db_user = db.query(UserModel).filter(UserModel.email == user_data.email).first()
     if db_user:
         return UserResponse(code=400, msg="Username already registered")
     hashed_password = hash_password(user_data.password)
@@ -31,7 +34,7 @@ def create_user(user_data: UserCreate, db: Session = Depends(get_db)) -> UserRes
         username=user_data.username,
         nickname=user_data.nickname,
         password=hashed_password,
-        phone=user_data.phone
+        email=user_data.email
     )
 
     db.add(new_user)
@@ -43,7 +46,9 @@ def create_user(user_data: UserCreate, db: Session = Depends(get_db)) -> UserRes
 
 @router.post("/login", response_model=LoginResponse)
 def login(login_request: LoginRequest, db: Session = Depends(get_db)) -> LoginResponse:
-    user = db.query(UserModel).filter(UserModel.phone == login_request.phone).first()
+    if not is_valid_email(login_request.email):
+        return LoginResponse(code=400, msg="Invalid email address", data={})
+    user = db.query(UserModel).filter(UserModel.email == login_request.email).first()
     
     if not user:
         return LoginResponse(code=404, msg="User not found", data={})
@@ -59,10 +64,10 @@ def login(login_request: LoginRequest, db: Session = Depends(get_db)) -> LoginRe
     return LoginResponse(code=200, msg="Login successful", data=user.to_json(),token=token)
 @router.post("/reset_password",response_model=UserResponse)
 def reset_password(resetBody:UserResetPasswordRequest, db: Session = Depends(get_db)):
-    phone:str = resetBody.phone
+    email:str = resetBody.email
     old_password:str = resetBody.old_password
     new_password:str = resetBody.new_password
-    user = db.query(UserModel).filter(UserModel.phone == phone).first()
+    user = db.query(UserModel).filter(UserModel.email == email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     if user.password != old_password:
@@ -73,9 +78,9 @@ def reset_password(resetBody:UserResetPasswordRequest, db: Session = Depends(get
     return UserResponse(code=200, data=None, msg="Password reset successful")
 @router.post("/forgot_password",response_model=UserResponse)
 def forgot_password(forgotBody:UserForgotPasswordRequest, db: Session = Depends(get_db)):
-    phone:str = forgotBody.phone
+    email:str = forgotBody.email
     new_password:str = forgotBody.new_password
-    user = db.query(UserModel).filter(UserModel.phone == phone).first()
+    user = db.query(UserModel).filter(UserModel.email == email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     user.password = new_password

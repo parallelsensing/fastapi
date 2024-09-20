@@ -5,7 +5,7 @@ from typing import Optional, Dict, Any
 class UserInfo(BaseModel):
     username: Optional[str] = None
     nickname: Optional[str] = None
-    phone: Optional[str] = None
+    email: Optional[str] = None
     role: Optional[int] = None
     class Config:
         orm_mode = True
@@ -15,7 +15,7 @@ class UserCreate(BaseModel):
     username: str
     nickname: str
     password: str
-    phone: str
+    email: str
     role: int
 
 
@@ -24,10 +24,16 @@ class UserResponse(BaseModel):
     data: Optional[dict] = None
     msg: str
 
+class EmailForGetPasswordRequest(BaseModel):
+    email: str
+
 class UserResetPasswordRequest(BaseModel):
-    phone: str
+    email: str
     old_password: str
     new_password: str
+    code:str
 class UserForgotPasswordRequest(BaseModel):
-    phone: str
+    email: str
     new_password: str
+    code:str
+

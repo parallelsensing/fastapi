@@ -8,7 +8,8 @@ class User(Base):
     username = Column(String)
     nickname = Column(String)
     password = Column(String)
-    phone = Column(String, unique=True, index=True)
+    # phone = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
     role = Column(Integer, default=1) # 0:admin, 1:normal_user
 
     def __repr__(self):
@@ -20,5 +21,5 @@ class User(Base):
             'id': self.id,
             'username': self.username,
             'nickname': self.nickname,
-            'phone': self.phone
+            'email': self.email
         }
