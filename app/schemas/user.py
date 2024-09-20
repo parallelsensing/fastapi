@@ -16,7 +16,8 @@ class UserCreate(BaseModel):
     nickname: str
     password: str
     email: str
-    role: int
+    code:str
+    # role: int
 
 
 class UserResponse(BaseModel):
