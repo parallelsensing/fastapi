@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.models import CaptchaModel,User 
 import random
 import time
+import datetime
 
 class Captcha:
     def __init__(self,):
@@ -19,7 +20,14 @@ class Captcha:
         # 检查是否已经存在验证码
         captchaItem = self.get_captcha(email)
         if captchaItem:
-            if int(time.time())-captchaItem.timestamp<=300:
+            # 获取当前 UTC 时间（时区感知的 datetime 对象）
+            now = datetime.datetime.now(datetime.timezone.utc)
+            print(now)
+            # 确保 captchaItem.timestamp 是时区感知的
+            if captchaItem.timestamp.tzinfo is None:
+                # 如果不是时区感知的，将其设置为 UTC
+                captchaItem.timestamp = captchaItem.timestamp.replace(tzinfo=datetime.timezone.utc)
+            if (now - captchaItem.timestamp).total_seconds() <= 300: 
                 return None
             else:
                 self.db.delete(captchaItem)
@@ -43,8 +51,12 @@ class Captcha:
         captcha = self.get_captcha(email)
         if captcha and captcha.code == code:
             # 检查有效期
-            current_time = int(time.time())
-            if current_time - captcha.timestamp <= 300:  # 5分钟有效期
+            # 获取当前 UTC 时间（时区感知的 datetime 对象）
+            now = datetime.datetime.now(datetime.timezone.utc)
+            if captcha.timestamp.tzinfo is None:
+                # 如果不是时区感知的，将其设置为 UTC
+                captcha.timestamp = captcha.timestamp.replace(tzinfo=datetime.timezone.utc)
+            if (now - captcha.timestamp).total_seconds() <= 300:
                 self.clear_captcha(captcha)
                 return True
         return False
