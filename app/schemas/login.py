@@ -3,7 +3,7 @@ from typing import Optional, Dict, Any
 
 # 请求体schema
 class LoginRequest(BaseModel):
-    phone: str
+    email: str
     password: str
 
 # 响应数据schema
