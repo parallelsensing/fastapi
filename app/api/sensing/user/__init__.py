@@ -21,7 +21,7 @@ def get_db():
     finally:
         db.close()
 # 获取注册验证码
-@router.post("get_create_code",response_model=UserResponse)
+@router.post("/get_create_code",response_model=UserResponse)
 async def get_create_code(email:EmailForGetPasswordRequest,background_tasks:BackgroundTasks, db: Session = Depends(get_db))->UserResponse:
     if not is_valid_email(email.email):
         return UserResponse(code=400, msg="Invalid email address")
