@@ -6,8 +6,9 @@ from app.models import User as UserModel
 from typing import List
 from app.core.token import create_token, verify_token, get_current_user
 from app.core.security import hash_password,verify_password
-from app.utils import is_valid_email,send_email
+from app.utils import is_valid_email,send_email,send_link_email
 from app.core.captcha.captcha import Captcha
+from app.core.account.account_manager import AccountManager
 # app = FastAPI()
 import asyncio
 
@@ -127,18 +128,50 @@ async def forgot_password(emailForGetPasswordRequest: EmailForGetPasswordRequest
     
     return UserResponse(code=200, data=None, msg="Send email successful")
 
+
+# 生成重置密码链接
+@router.post("/forgot_password_link", response_model=UserResponse)
+async def forgot_password_link(emailForGetPasswordRequest: EmailForGetPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db) ):
+    if not is_valid_email(emailForGetPasswordRequest.email):
+        return UserResponse(code=400, msg="Invalid email address")
+    
+    email: str = emailForGetPasswordRequest.email
+
+    is_exist = db.query(UserModel).filter(UserModel.email == email).first()
+    if not is_exist:
+        return UserResponse(code=200, msg="captcha have been sent")
+    
+    accountManager:AccountManager = AccountManager()
+    
+    token = accountManager.create_reset_password_token(email).code
+    
+    link = f"http://platform.parallelsensing.com/account/reset-password?token={token}"
+    
+    background_tasks.add_task(send_link_email,"reset_password",email,link,1)
+    return UserResponse(code=200, data={'token':token}, msg="Send email successful")
+    
+# 验证更改密码token
+@router.get("/checktoken/{token}",response_model=UserResponse)
+def check_token(token:str):
+    accountManager:AccountManager = AccountManager()
+    
+    if not  accountManager.verify_reset_password_token(token):
+        return UserResponse(code=400,msg="error")
+    
+    return UserResponse(code=200,msg="true")
+    
+
 @router.post("/reset_password",response_model=UserResponse)
 def reset_password(forgotBody:UserForgotPasswordRequest, db: Session = Depends(get_db)):
     if not is_valid_email(forgotBody.email):
         return UserResponse(code=400, msg="Invalid email address")
     
     email:str = forgotBody.email
-    code:str = forgotBody.code
+    token:str = forgotBody.token
     
-    caseptcha = Captcha()
-    if not caseptcha.check_captcha(email,code):
-        raise HTTPException(status_code=401, detail="Incorrect captcha")
-    del caseptcha
+    accountManager:AccountManager = AccountManager()
+    if not accountManager.verify_reset_password_token(token):
+        return UserResponse(code=400, msg="Invalid token") 
     
     new_password:str = forgotBody.new_password
     hashed_password = hash_password(new_password)
