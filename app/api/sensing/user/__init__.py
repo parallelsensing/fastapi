@@ -34,7 +34,7 @@ async def get_create_code(email:EmailForGetPasswordRequest,background_tasks:Back
     captcha = Captcha().generate_captcha(email.email)
     if not captcha:
         return UserResponse(code=400, msg="captcha have been sent")
-    background_tasks.add_task(send_email, "register", email.email, captcha.code, 5) 
+    background_tasks.add_task(send_email, "register", email.email, captcha.code, 1) 
 
     return UserResponse(code=200,msg='success')
 
@@ -123,7 +123,7 @@ async def forgot_password(emailForGetPasswordRequest: EmailForGetPasswordRequest
         return UserResponse(code=400, msg="captcha have been sent")
      
     # 将 send_email 添加到后台任务中
-    background_tasks.add_task(send_email, "reset_password", email, captcha.code, 5)
+    background_tasks.add_task(send_email, "reset_password", email, captcha.code, 1)
     
     return UserResponse(code=200, data=None, msg="Send email successful")
 

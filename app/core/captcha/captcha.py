@@ -27,7 +27,7 @@ class Captcha:
             if captchaItem.timestamp.tzinfo is None:
                 # 如果不是时区感知的，将其设置为 UTC
                 captchaItem.timestamp = captchaItem.timestamp.replace(tzinfo=datetime.timezone.utc)
-            if (now - captchaItem.timestamp).total_seconds() <= 300: 
+            if (now - captchaItem.timestamp).total_seconds() <= 60: 
                 return None
             else:
                 self.db.delete(captchaItem)
@@ -56,7 +56,7 @@ class Captcha:
             if captcha.timestamp.tzinfo is None:
                 # 如果不是时区感知的，将其设置为 UTC
                 captcha.timestamp = captcha.timestamp.replace(tzinfo=datetime.timezone.utc)
-            if (now - captcha.timestamp).total_seconds() <= 300:
+            if (now - captcha.timestamp).total_seconds() <= 60:
                 self.clear_captcha(captcha)
                 return True
         return False
