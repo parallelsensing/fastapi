@@ -36,5 +36,5 @@ class UserResetPasswordRequest(BaseModel):
 class UserForgotPasswordRequest(BaseModel):
     email: str
     new_password: str
-    code:str
+    token:str
 
