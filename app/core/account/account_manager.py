@@ -55,7 +55,7 @@ class AccountManager:
         self.db.commit()
         
     
-    def verify_reset_password_token(self,token: str) -> str:
+    def verify_reset_password_token(self,token: str) -> int:
         try:
             email, timestamp_token = token.split('$')
             timestamp, user_token = timestamp_token.split('&')
@@ -65,15 +65,17 @@ class AccountManager:
         current_timestamp = datetime.utcnow()
         token_gen_time = datetime.strptime(timestamp, "%Y%m%d%H%M%S")
         if (current_timestamp - token_gen_time) > timedelta(minutes=1):
-            raise HTTPException(status_code=401, detail="Token expired")
+            # raise HTTPException(status_code=401, detail="Token expired")
+            return 402
 
         data = f"{email}${timestamp}"
         expected_token = hashlib.sha256(f"{data}{SECRET_KEY}".encode()).hexdigest()
 
         if user_token != expected_token:
-            raise HTTPException(status_code=401, detail="Invalid token")
+            # raise HTTPException(status_code=401, detail="Invalid token")
+            return 401
 
-        return email
+        return 200
     
     def reset_password(self,email, new_password):
         db=SessionLocal()

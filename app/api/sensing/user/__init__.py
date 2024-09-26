@@ -170,7 +170,7 @@ def reset_password(forgotBody:UserForgotPasswordRequest, db: Session = Depends(g
     token:str = forgotBody.token
     
     accountManager:AccountManager = AccountManager()
-    if not accountManager.verify_reset_password_token(token):
+    if accountManager.verify_reset_password_token(token) != 200:
         return UserResponse(code=400, msg="Invalid token") 
     
     new_password:str = forgotBody.new_password
