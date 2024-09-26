@@ -67,7 +67,7 @@ class AccountManager:
         if (current_timestamp - token_gen_time) > timedelta(minutes=1):
             raise HTTPException(status_code=401, detail="Token expired")
 
-        data = f"{email}:{timestamp}"
+        data = f"{email}${timestamp}"
         expected_token = hashlib.sha256(f"{data}{SECRET_KEY}".encode()).hexdigest()
 
         if user_token != expected_token:
