@@ -155,7 +155,7 @@ async def forgot_password_link(emailForGetPasswordRequest: EmailForGetPasswordRe
 def check_token(token:str):
     accountManager:AccountManager = AccountManager()
     
-    if not  accountManager.verify_reset_password_token(token):
+    if accountManager.verify_reset_password_token(token) != 200:
         return UserResponse(code=400,msg="error")
     
     return UserResponse(code=200,msg="true")
