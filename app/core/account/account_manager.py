@@ -43,9 +43,9 @@ class AccountManager:
                 self.db.commit()
         
         timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-        data = f"{email}:{timestamp}"
+        data = f"{email}${timestamp}"
         token = hashlib.sha256(f"{data}{SECRET_KEY}".encode()).hexdigest()
-        result = f"{email}:{timestamp}%{token}" 
+        result = f"{email}${timestamp}&{token}" 
         
         captcha = CaptchaModel(code=result,email=email)
         
@@ -57,8 +57,8 @@ class AccountManager:
     
     def verify_reset_password_token(self,token: str) -> str:
         try:
-            email, timestamp_token = token.split(':')
-            timestamp, user_token = timestamp_token.split('%')
+            email, timestamp_token = token.split('$')
+            timestamp, user_token = timestamp_token.split('&')
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid token format")
 
