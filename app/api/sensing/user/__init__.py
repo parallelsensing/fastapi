@@ -148,7 +148,7 @@ async def forgot_password_link(emailForGetPasswordRequest: EmailForGetPasswordRe
     link = f"http://platform.parallelsensing.com/account/reset-password?token={token}"
     
     background_tasks.add_task(send_link_email,"reset_password",email,link,1)
-    return UserResponse(code=200, data={'token':token}, msg="Send email successful")
+    return UserResponse(code=200, msg="Send email successful")
     
 # 验证更改密码token
 @router.get("/checktoken/{token}",response_model=UserResponse)
